@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="Rocker">
+        <attr name="areaBackground" format="color|reference" />
+        <attr name="rockerBackground" format="color|reference" />
+        <attr name="rockerRadius" format="dimension" />
+        <attr name="border" format="dimension"/>
+        <attr name="inside_margin" format="dimension"/>
+        <attr name="radius" format="dimension"/>
+        <attr name="mainColor" format="color"/>
+        <attr name="chargingColor" format="color"/>
+        <attr name="normalColor" format="color"/>
+        <attr name="lowPowerColor" format="color"/>
+    </declare-styleable>
+
+</resources>

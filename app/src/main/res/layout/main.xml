@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:rockview="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:background="#F3000000"
+     >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/connectButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onConnectButtonClicked"
+                android:text="@string/Connect" >
+            </Button>
+            <Button
+                android:id="@+id/armButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onSendArmButtonClicked"
+                android:text="@string/Unarm" >
+            </Button>
+
+            <Button
+                android:id="@+id/lauchLandButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onlauchLandButtonClicked"
+                android:text="@string/Launch" >
+            </Button>
+            <Button
+                android:id="@+id/headFreeButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onheadFreeButtonClicked"
+                android:text="@string/Headfree" >
+            </Button>
+
+            <Button
+                android:id="@+id/altHoldButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onaltHoldButtonClicked"
+                android:text="@string/Altihold" >
+            </Button>
+            <Button
+                android:id="@+id/accCaliButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onAccCaliButtonClicked"
+                android:text="@string/IMUCali" >
+            </Button>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            <com.test.UAVRemoter.BatteryView
+                android:id="@+id/battery2"
+                android:layout_width="100dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="5dp"
+                rockview:border="8dp"
+                rockview:inside_margin="0dp"
+                rockview:mainColor="#ffff"
+                rockview:radius="5dp" />
+
+            <ImageView
+                android:layout_width= "15dp"
+                android:layout_height="15dp"
+                android:layout_margin="5dp"
+                android:id="@+id/settings"
+                android:src="@drawable/settings"
+                />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="8dp">
+
+            <TextView android:id="@+id/pitchAngText"
+                android:layout_width="1dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:text="PitchAng:" />
+
+            <TextView android:id="@+id/rollAngText"
+                android:layout_width="1dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:text="RollAng:" />
+
+            <TextView android:id="@+id/yawAngText"
+                android:layout_width="1dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:text="YawAng:" />
+
+
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="8dp">
+
+
+            <TextView android:id="@+id/altText"
+                android:layout_width="1dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:text="Altitude:" />
+
+            <TextView android:id="@+id/distanceText"
+                android:layout_width="1dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:text="Distance:" />
+
+            <TextView android:id="@+id/voltageText"
+                android:layout_width="1dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:text="Voltage:" />
+
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:textColor="@color/white"
+            android:layout_marginLeft="8dp">
+
+            <TextView android:id="@+id/yawText"
+                android:layout_width="1dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:text="Yaw:" />
+
+            <TextView android:id="@+id/throttleText"
+                android:layout_width="1dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:text="Throttle:" />
+
+            <TextView android:id="@+id/pitchText"
+                android:layout_width="1dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:text="Pitch:" />
+
+            <TextView android:id="@+id/rollText"
+                android:layout_width="1dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:text="Roll:" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <com.test.UAVRemoter.MySurfaceView
+        android:id="@+id/rockerView_left"
+        android:layout_width="202dp"
+        android:layout_height="202dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginBottom="10dp"
+        rockview:areaBackground="@drawable/area_bg"
+        rockview:rockerBackground="@drawable/rocker_bg"
+        rockview:rockerRadius="30dp" />
+
+        <com.test.UAVRemoter.MySurfaceView
+            android:id="@+id/rockerView_right"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            rockview:areaBackground="@drawable/area_bg"
+            rockview:rockerBackground="@drawable/rocker_bg"
+            rockview:rockerRadius="30dp" />
+
+
+    <Switch
+        android:id="@+id/tool_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_centerInParent="true"
+        android:showText="true"
+        android:textOff="J"
+        android:textOn="A"
+        android:textColor="@color/white"
+        android:thumb="@drawable/switch_thumb_selector"
+        android:track="@drawable/switch_track_selector" />
+
+</RelativeLayout>
+

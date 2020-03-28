@@ -1,30 +1,46 @@
 package com.test.UAVRemoter;
 
 import android.app.Activity;
-import android.support.v7.app.AppCompatActivity;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.method.ScrollingMovementMethod;
-import android.widget.Button;
+import android.text.style.SuperscriptSpan;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-public class Help extends Activity {
+public class Help extends Dialog {
+    private ImageView img_back;
+    private Context context;
+    private TextView helpText;
 
-    TextView helpId;
-    TextView helpText;
 
+    public Help(Context context, int theme) {
+        super(context, theme);
+
+        this.context=context;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_help);
+        this.setContentView(R.layout.dialog_help);
+        initview();
+    }
+    private void initview() {
 
-        helpId=(TextView)findViewById(R.id.HelpId);
+        img_back=(ImageView) findViewById(R.id.close);
         helpText=(TextView)findViewById(R.id.textHelp);
-        InputStream input=getResources().openRawResource(R.raw.help);
+        InputStream input=context.getResources().openRawResource(R.raw.help);
         Reader reader=new InputStreamReader(input);
         StringBuffer stringBuffer=new StringBuffer();
         char b[]=new char[1024];
@@ -40,5 +56,13 @@ public class Help extends Activity {
         String stringHelp=stringBuffer.toString();
         helpText.setMovementMethod(ScrollingMovementMethod.getInstance());
         helpText.setText(stringHelp);
+        img_back.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Help.this.dismiss();
+            }
+        });
     }
+
+
 }
+

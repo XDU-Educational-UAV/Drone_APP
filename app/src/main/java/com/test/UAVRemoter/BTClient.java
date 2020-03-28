@@ -18,18 +18,25 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.content.Intent;
+
+import java.util.ListIterator;
 import java.util.Vector;
 import java.util.jar.JarEntry;
 
@@ -48,6 +55,9 @@ public class BTClient extends Activity {
     private boolean mConnected = false;
     public Vector<StringBuilder> mlogData=new Vector<StringBuilder>();
     private logData temp;
+    private Help mhelp;
+    private License mlicense;
+    private logData mlogdata;
 
 	private final static int REQUEST_CONNECT_DEVICE = 1; // 宏定义查询设备句柄
 
@@ -71,7 +81,7 @@ public class BTClient extends Activity {
     private final static int JAPAN_PATTERN=0;
     private final static int AMERICA_PATTERN=1;
     int pattern=JAPAN_PATTERN;
-
+    private WindowManager wm;
     // Code to manage Service lifecycle.
     // 管理BLE数据收发服务整个生命周期
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -350,6 +360,8 @@ public class BTClient extends Activity {
 		headFreeButton=(Button)findViewById(R.id.headFreeButton);
 		altHoldButton=(Button)findViewById(R.id.altHoldButton);
 
+        wm= (WindowManager) this
+                .getSystemService(Context.WINDOW_SERVICE);
 
         //绑定BLE收发服务mServiceConnection
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
@@ -381,9 +393,7 @@ public class BTClient extends Activity {
         settingsView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Intent settingsIntent = new Intent(BTClient.this, Settings.class);
-                startActivity(settingsIntent);
+                showPopupMenu(settingsView);
             }
         });
 	}
@@ -594,5 +604,65 @@ public class BTClient extends Activity {
         return intentFilter;
     }
 
+    private void showPopupMenu(View view) {
+        // View当前PopupMenu显示的相对View的位置
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        // menu布局
+        popupMenu.getMenuInflater().inflate(R.menu.menu, popupMenu.getMenu());
+        // menu的item点击事件
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int height=getScreenPara().y/4*3;
+                int width =getScreenPara().x/4*3;
+                switch (item.getItemId()) {
+                    case R.id.action_help:
+                        mhelp=new Help(BTClient.this,R.style.MyDialog);
+                        mhelp.show();
+                        mhelp.getWindow().setLayout(width, height);
+                        Log.i(TAG,width+"and"+height);
+                        mhelp.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                        mhelp.setCancelable(false);
+                        break;
+                    case R.id.action_license:
+                        mlicense=new License(BTClient.this,R.style.MyDialog);
+                        mlicense.show();
+                        mlicense.getWindow().setLayout(width,height);
+                        Log.i(TAG,width+"and"+height);
+                        mlicense.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                        mlicense.setCancelable(false);
+//                        Toast.makeText(BTClient.this, "action_share", Toast.LENGTH_LONG).show();
+                        break;
+                    case R.id.action_log:
+                        mlogdata=new logData(BTClient.this,R.style.MyDialog);
+                        mlogdata.show();
+                        mlogdata.getWindow().setLayout(width,height);;
+                        Log.i(TAG,width+"and"+height);
+                        mlogdata.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                        mlogdata.setCancelable(false);
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+        // PopupMenu关闭事件
+        popupMenu.setOnDismissListener(new PopupMenu.OnDismissListener() {
+            @Override
+            public void onDismiss(PopupMenu menu) {
+//                Toast.makeText(getApplicationContext(), "关闭PopupMenu", Toast.LENGTH_SHORT).show();
+            }
+        });
+        popupMenu.show();
+    }
+
+    //get screen width
+    private Point getScreenPara()
+    {
+        Point point=new Point();
+        wm.getDefaultDisplay().getSize(point);
+        return point;
+    }
 
 }

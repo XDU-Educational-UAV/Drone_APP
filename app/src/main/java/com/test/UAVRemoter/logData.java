@@ -1,36 +1,48 @@
 package com.test.UAVRemoter;
 
-import android.app.Activity;
-import android.support.v7.app.AppCompatActivity;
+import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.PriorityQueue;
 import java.util.Vector;
-import java.util.concurrent.TimeoutException;
 
-public class logData extends Activity {
-    private TextView textViewId;
-    private TextView textViewLogData;
+public class logData extends Dialog{
+    private ImageView img_back;
+    private Context context;
+    private TextView dataText;
     private Vector<StringBuilder> mdata=new Vector<>();
 
     public void SetData(Vector<StringBuilder> data)
     {
         mdata=data;
     }
+
+    public logData(Context context, int theme) {
+        super(context, theme);
+        this.context=context;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_log_data);
-        textViewId=(TextView)findViewById(R.id.LogDataId);
-        textViewLogData=(TextView)findViewById(R.id.TextLogData);
+        this.setContentView(R.layout.dialog_log_data);
+        initview();
+    }
+
+    private void initview() {
+
+        img_back=(ImageView) findViewById(R.id.close);
+        dataText=(TextView)findViewById(R.id.TextLogData);
         for(StringBuilder stringBuilder : mdata)
-            textViewLogData.append(stringBuilder);
-        textViewLogData.setMovementMethod(ScrollingMovementMethod.getInstance());
+            dataText.append(stringBuilder);
+        dataText.setMovementMethod(ScrollingMovementMethod.getInstance());
+        img_back.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                logData.this.dismiss();
+            }
+        });
     }
 }
+

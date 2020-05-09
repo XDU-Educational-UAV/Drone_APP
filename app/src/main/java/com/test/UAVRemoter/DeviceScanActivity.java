@@ -8,16 +8,21 @@
 
 package com.test.UAVRemoter;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,9 +38,12 @@ import java.util.ArrayList;
  * Activity for scanning and displaying available Bluetooth LE devices.
  */
 public class DeviceScanActivity extends ListActivity {
+
+    private final static String TAG = DeviceScanActivity.class.getSimpleName();
+
     private LeDeviceListAdapter mLeDeviceListAdapter;
     private BluetoothAdapter mBluetoothAdapter;
-    private boolean mScanning;
+    private boolean mScanning=false;
 
     private Handler mHandler;
     // Stops scanning after 10 seconds.每次的扫描时间最多10s
@@ -48,9 +56,9 @@ public class DeviceScanActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.device_scan);
-        setTitle("");
+        getBlePermissionFromSys();
         mHandler = new Handler();
-
+        Log.i(TAG,"is"+mScanning);
         // 设定扫描按键响应
         Button scanButton = (Button) findViewById(R.id.button_scan);
         scanButton.setOnClickListener(new View.OnClickListener() {
@@ -93,6 +101,21 @@ public class DeviceScanActivity extends ListActivity {
             Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
             finish();
             return;
+        }
+    }
+
+    public void getBlePermissionFromSys() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            int REQUEST_CODE_CONTACT = 102;
+            String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION};
+            //验证是否许可权限
+            for (String str : permissions) {
+                if (this.checkSelfPermission(str) != PackageManager.PERMISSION_GRANTED) {
+                    //申请权限
+                    this.requestPermissions(permissions, REQUEST_CODE_CONTACT);
+                    return;
+                }
+            }
         }
     }
 
@@ -171,6 +194,7 @@ public class DeviceScanActivity extends ListActivity {
 
 
             mScanning = true;
+            Log.d(TAG,"startLenScan");
             mBluetoothAdapter.startLeScan(mLeScanCallback);
             scanButton.setText(R.string.Searching);
 
@@ -254,15 +278,18 @@ public class DeviceScanActivity extends ListActivity {
 
         @Override
         public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
+            Log.d(TAG,"into callback");
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     mLeDeviceListAdapter.addDevice(device);
+                    Log.d(TAG,"name:"+device.getName()+"addr:"+device.getAddress());
                     mLeDeviceListAdapter.notifyDataSetChanged();
                 }
             });
         }
     };
+
 
     static class ViewHolder {
         TextView deviceName;

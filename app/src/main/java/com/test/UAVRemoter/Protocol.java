@@ -17,15 +17,23 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.nfc.Tag;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public class Protocol {
+	public static final int MAX = 500;
 	public static int throttle,yaw,pitch,roll;
+	public static int progressBar2 = MAX/2,
+	progressBar1 = MAX/2,
+	progressBar3 = MAX/2,
+	progressBar4 = MAX/2;
 	public static float pitchAng,rollAng,yawAng,alt,voltage,speedZ;
+	public static int throttleFly,yawFly,pitchFly,rollFly;
 	public static byte[] outputData;
 	public static final int 
 	SET_THROTTLE=0x01,
@@ -35,20 +43,21 @@ public class Protocol {
 	ARM_IT=5,
 	DISARM_IT=6,
 	SET_4CON=7,
-	LAUCH=8,
+	LAUNCH=8,
 	LAND_DOWN=9,
 	HOLD_ALT=10,
 	STOP_HOLD_ALT=11,
 	HEAD_FREE=12,
 	STOP_HEAD_FREE=13,
-	POS_HOLD=14,
-	STOP_POS_HOLD=15,
+//	POS_HOLD=14,
+//	STOP_POS_HOLD=15,
 	FLY_STATE=16,//pitch、roll、yaw、Altitude、GPS_FIX?、Sat num、Voltage
 	MSP_SET_1WP=17,
+	AUXI_4CON=18,
 	SET_MOTOR=214,
 	MSP_ACC_CALIBRATION=205;
 	
-	public static final int LAUCH_THROTTLE=1455;
+	public static final int LAUNCH_THROTTLE=1455;
 	public static final int LAND_THROTTLE=1340;
 
 	
@@ -61,46 +70,58 @@ public class Protocol {
 		List<Byte> cmdData=new LinkedList<Byte>();
 		switch(cmd)
 		{
-		case SET_THROTTLE:
-			cmdData.add((byte)((throttle )&0xff));
-			cmdData.add((byte)((throttle>>8)&0xff));  
-			break;
-		case SET_YAW:
-			cmdData.add((byte)((yaw )&0xff));
-			cmdData.add((byte)((yaw>>8)&0xff));  
-			break;
-		case SET_PITCH:
-			cmdData.add((byte)((pitch )&0xff));
-			cmdData.add((byte)((pitch>>8)&0xff));  
-			break;
-		case SET_ROLL:
-			cmdData.add((byte)((roll )&0xff));
-			cmdData.add((byte)((roll>>8)&0xff)); 
-			break;
-		case SET_MOTOR:
-			cmdData.add((byte)((throttle )&0xff));
-			cmdData.add((byte)((throttle>>8)&0xff));  
-			break;
+//		case SET_THROTTLE:
+//			cmdData.add((byte)((throttle )&0xff));
+//			cmdData.add((byte)((throttle>>8)&0xff));
+//			break;
+//		case SET_YAW:
+//			cmdData.add((byte)((yaw )&0xff));
+//			cmdData.add((byte)((yaw>>8)&0xff));
+//			break;
+//		case SET_PITCH:
+//			cmdData.add((byte)((pitch )&0xff));
+//			cmdData.add((byte)((pitch>>8)&0xff));
+//			break;
+//		case SET_ROLL:
+//			cmdData.add((byte)((roll )&0xff));
+//			cmdData.add((byte)((roll>>8)&0xff));
+//			break;
+//		case SET_MOTOR:
+//			cmdData.add((byte)((throttle )&0xff));
+//			cmdData.add((byte)((throttle>>8)&0xff));
+//			break;
 		case SET_4CON: 	
-			cmdData.add((byte)((throttle )&0xff));
-			cmdData.add((byte)((throttle>>8)&0xff));
+			cmdData.add((byte)((progressBar1 )&0xff));
+			cmdData.add((byte)((roll>>8)&0xff));
+			cmdData.add((byte)((pitch )&0xff));
+			cmdData.add((byte)((pitch>>8)&0xff));
 			cmdData.add((byte)((yaw )&0xff));
 			cmdData.add((byte)((yaw>>8)&0xff));
-			cmdData.add((byte)((pitch )&0xff));
-			cmdData.add((byte)((pitch>>8)&0xff));  
-			cmdData.add((byte)((roll )&0xff));
-			cmdData.add((byte)((roll>>8)&0xff));
+			cmdData.add((byte)((throttle)&0xff));
+			cmdData.add((byte)((throttle>>8)&0xff));
 			break;
+		case AUXI_4CON:
+			cmdData.add((byte)((progressBar4)&0xff));
+			cmdData.add((byte)((progressBar4>>8)&0xff)); //roll
+			cmdData.add((byte)((progressBar3 )&0xff));
+			cmdData.add((byte)((progressBar3>>8)&0xff)); //pitch
+			cmdData.add((byte)((progressBar1 )&0xff));
+			cmdData.add((byte)((progressBar1>>8)&0xff)); //yaw
+			cmdData.add((byte)((progressBar2)&0xff));
+			cmdData.add((byte)((progressBar2>>8)&0xff)); //throttle
 		case ARM_IT:
 			return null;
 			//break;
 		case DISARM_IT:
 			return null;
+
 			//break;
-		case LAUCH: 
+		case LAUNCH:
+
 			//throttle
 			return null; 
 		case LAND_DOWN:
+
 			return null;
 		case HOLD_ALT: 
 			return null;
@@ -110,11 +131,11 @@ public class Protocol {
 			return null;
 		case HEAD_FREE:
 			return null;
-		case POS_HOLD:
-			return null;
-		case STOP_POS_HOLD:
-			return null;
-		case FLY_STATE:
+//		case POS_HOLD:
+//			return null;
+//		case STOP_POS_HOLD:
+//			return null;
+		case FLY_STATE://请求IMU跟新
 			return null;
 		case MSP_ACC_CALIBRATION:
 			return null;
@@ -126,6 +147,7 @@ public class Protocol {
 		  for (byte b: cmdData) {
 			  commandData[i++] = b;
 		  }
+		  Log.d("dataLength", ":"+i);
 		return commandData;
 	}
 	// get the whole cmd data to send to MUV
@@ -163,7 +185,6 @@ public class Protocol {
 		  return (sendData);
 		   
 	}
-	
 	public static final int
 	  IDLE = 0,
 	  HEADER_START = 1,
@@ -189,7 +210,6 @@ public class Protocol {
 		 int i=0;
 		int c;
 	 	System.out.println("dataInLen:"+len+" "+inData[0]);
-
 		for(i=0;i<len;i++)
 		{ 
 			c = inData[i];
@@ -221,7 +241,7 @@ public class Protocol {
 		        c_state = HEADER_SIZE;
 		      } 
 			else if (c_state == HEADER_SIZE) {
-		        cmd = (byte)(c&0xFF);
+		        cmd = (byte)(c&0xFF);  //code
 		        checksum ^= (c&0xFF);
 		        c_state = HEADER_CMD;
 		      } 
@@ -276,10 +296,14 @@ public class Protocol {
 		    case FLY_STATE:
 		    	rollAng = read16()/10;
 		    	pitchAng = read16()/10;
-		    	yawAng = read16()/10; 
+		    	yawAng = read16()/10;
 		        alt = read32()/100.0f;		//cm
 				voltage=read16()/100.0f;
 		        speedZ=read16()/1000.0f;
+				yawFly = read16();
+				throttleFly= read16();
+				pitchFly = read16();
+				rollFly = read16();
 		        System.out.println("pitch:"+pitchAng);
 		       break;
 		  }

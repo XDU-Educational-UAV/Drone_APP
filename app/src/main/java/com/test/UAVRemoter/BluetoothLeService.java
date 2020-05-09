@@ -21,10 +21,13 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,7 +38,7 @@ public class BluetoothLeService extends Service
 
     private BluetoothManager mBluetoothManager;
     public static BluetoothAdapter mBluetoothAdapter;
-    public static String mBluetoothDeviceAddress;
+    public static String mBluetoothDeviceAddress=null;
     public static BluetoothGatt mBluetoothGatt;
     private int mConnectionState = STATE_DISCONNECTED;
 
@@ -69,11 +72,11 @@ public class BluetoothLeService extends Service
 
 
     public final static UUID UUID_SERVICE =
-            UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb");
+            UUID.fromString("0000FFE0-0000-1000-8000-00805F9B34FB");
 
     //用于发送的UUID
     public final static UUID UUID_WRITE =
-            UUID.fromString("0000ffe9-0000-1000-8000-00805f9b34fb");
+            UUID.fromString("0000FFE1-0000-1000-8000-00805F9B34FB");
 
 
     public final static UUID UUID_LED_SET_BIT7 = UUID.fromString("0000fff1-0000-1000-8000-00805f9b34fb");
@@ -95,6 +98,23 @@ public class BluetoothLeService extends Service
 
     private Activity activity;
 
+    //close() Gatt处理
+    public static boolean refreshGattCache(BluetoothGatt gatt) {
+        boolean result = false;
+        try {
+            if (gatt != null) {
+                Method refresh = BluetoothGatt.class.getMethod("refresh");
+                if (refresh != null) {
+                    refresh.setAccessible(true);
+                    result = (boolean) refresh.invoke(gatt, new Object[0]);
+                }
+            }
+        } catch (Exception e) {
+        }
+        return result;
+    }
+
+
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services dis++++++++++++++++++++++++++++covered.
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback()
@@ -105,28 +125,33 @@ public class BluetoothLeService extends Service
 
 
             String intentAction;
-            if (newState == BluetoothProfile.STATE_CONNECTED)
+            if(status == BluetoothGatt.GATT_SUCCESS)
             {
-                intentAction = ACTION_GATT_CONNECTED;
-                mConnectionState = STATE_CONNECTED;
-                broadcastUpdate(intentAction);
-                Log.i(TAG, "Connected to GATT server.");
-                // Attempts to discover services after successful connection.
-                Log.i(TAG, "Attempting to start service discovery:" +
-                        mBluetoothGatt.discoverServices());
+                if (newState == BluetoothProfile.STATE_CONNECTED)
+                {
+                    intentAction = ACTION_GATT_CONNECTED;
+                    mConnectionState = STATE_CONNECTED;
+                    broadcastUpdate(intentAction);
+                    Log.i(TAG, "Connected to GATT server.");
+                    // Attempts to discover services after successful connection.
+                    Log.i(TAG, "Attempting to start service discovery:" +
+                            mBluetoothGatt.discoverServices());
 
-            } else if (newState == BluetoothProfile.STATE_DISCONNECTED)
-            {
-                intentAction = ACTION_GATT_DISCONNECTED;
-                mConnectionState = STATE_DISCONNECTED;
-                Log.i(TAG, "Disconnected from GATT server.");
-                broadcastUpdate(intentAction);
-                mBluetoothGatt.close();
-                mBluetoothGatt = null;
-                mSendCharacteristic = null;
+                } else if (newState == BluetoothProfile.STATE_DISCONNECTED)
+                {
+                    intentAction = ACTION_GATT_DISCONNECTED;
+                    mConnectionState = STATE_DISCONNECTED;
+                    Log.i(TAG, "Disconnected from GATT server.");
+                    broadcastUpdate(intentAction);
+                    refreshGattCache(mBluetoothGatt);
+                    mBluetoothGatt.disconnect();
+                    mBluetoothGatt.close();
+                    mBluetoothGatt = null;
+                    mSendCharacteristic = null;
 
-                //绑定BLE收发服务mServiceConnection
-//                initialize();
+                    //绑定BLE收发服务mServiceConnection
+                    initialize();
+                }
             }
         }
 
@@ -288,7 +313,12 @@ public class BluetoothLeService extends Service
 
         // We want to directly connect to the device, so we are setting the autoConnect
         // parameter to false.
-        mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mBluetoothGatt = device.connectGatt(this, false, mGattCallback, BluetoothDevice.TRANSPORT_LE);
+        } else {
+            mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
+        }
         Log.d(TAG, "Trying to create a new connection.");
         mBluetoothDeviceAddress = address;
         mConnectionState = STATE_CONNECTING;
@@ -395,12 +425,15 @@ public class BluetoothLeService extends Service
 
                 if (init == true)
                 {
-                    System.out.print("写出数据:");
+                    for (int j = 0; j <data.length; j++)
+                    {
+                        Log.d(TAG, String.valueOf(data[j]));
+                    }
                     for (int i = 0; i < data.length; i++)
                     {
                         System.out.print(data[i]);
                     }
-                    System.out.println("");
+                    System.out.println("+");
                 } else if (init == false)
                 {
 
@@ -512,6 +545,7 @@ public class BluetoothLeService extends Service
                 }
             }
         }
+//        enableNotification(true,gatt,gattCharacteristics);
         return gattServices;
     }
 

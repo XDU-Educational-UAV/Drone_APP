@@ -245,5 +245,7 @@
         android:thumb="@drawable/switch_thumb_selector"
         android:track="@drawable/switch_track_selector" />
 
+
+
 </RelativeLayout>
 

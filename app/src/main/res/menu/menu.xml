@@ -12,7 +12,13 @@
     app:showAsAction="never"/>
 
     <item
+        android:id="@+id/action_bar"
+        android:title="Auxiliary Bar"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/action_log"
         android:title="Data Log"
         app:showAsAction="never"/>
+
  </menu>

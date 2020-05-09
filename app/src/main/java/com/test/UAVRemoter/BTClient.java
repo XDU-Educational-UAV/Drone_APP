@@ -18,6 +18,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,6 +32,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,6 +50,8 @@ public class BTClient extends Activity {
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
 
+
+
     private String mDeviceName;
     private String mDeviceAddress;
     private short rssi;
@@ -58,6 +62,9 @@ public class BTClient extends Activity {
     private Help mhelp;
     private License mlicense;
     private logData mlogdata;
+    //
+    private AuxiliaryBar mAuxiliaryBar;
+
 
 	private final static int REQUEST_CONNECT_DEVICE = 1; // 宏定义查询设备句柄
 
@@ -69,13 +76,15 @@ public class BTClient extends Activity {
 	 
 	private TextView throttleText,yawText,pitchText,rollText;
 	private TextView pitchAngText,rollAngText,yawAngText,altText,distanceText,voltageText;
-	private Button connectButton,armButton,lauchLandButton,headFreeButton,altHoldButton;
+	private Button connectButton,armButton,launchLandButton,headFreeButton,altHoldButton;
 	private Switch switchTool;
 	private ImageView settingsView;
     //
 	private BatteryView batteryView;
     private MySurfaceView rockerViewLeft;
     private MySurfaceView rockerViewRight;
+
+
 
     //pattern
     private final static int JAPAN_PATTERN=0;
@@ -125,19 +134,25 @@ public class BTClient extends Activity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             int reCmd=-2;
-            rssi=intent.getExtras().getShort(BluetoothDevice.EXTRA_RSSI);//获取额外rssi值
-            rssiState(rssi);
+//            rssi=intent.getExtras().getShort(BluetoothDevice.EXTRA_RSSI);//获取额外rssi值
+//            rssiState(rssi);
             if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
                 mConnected = true;
+                Log.d(TAG,"GATT is connected");
                 resetButtonValue(R.string.Disconnect);
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
+                Log.d(TAG,"GATT is disconnected");
                 resetButtonValue(R.string.Connect);
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
 
                 // Show all the supported services and characteristics on the user interface.
                 // 获得所有的GATT服务，对于Crazepony的BLE透传模块，包括GAP（General Access Profile），
                 // GATT（General Attribute Profile），还有Unknown（用于数据读取）
+                //可以用于日志loading
+                /**
+                 *
+                 **/
                 mBluetoothLeService.getSupportedGattServices();
 
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
@@ -149,11 +164,8 @@ public class BTClient extends Activity {
                     for(byte byteChar : data)
                         stringBuilder.append(String.format("%02X ", byteChar));
                     mlogData.addElement(stringBuilder);
-                    final StringBuilder stringBuilder1=new StringBuilder(1);
-                    stringBuilder1.append("hello");
-                    mlogData.addElement(stringBuilder1);
-                    temp.SetData(mlogData);
-                    Log.i(TAG, "RX Data:"+mlogData);
+//                    temp.SetData(mlogData);
+//                    Log.i(TAG, "RX Data:"+mlogData);
                 }
 
 
@@ -183,11 +195,12 @@ public class BTClient extends Activity {
                 // process stick movement，处理摇杆数据
                 //rockerViewLeft.touchReadyToSend和rockerViewLeft.touchReadyToSend其中一个有变化就传输变化
                 //会出现定高的时候 某个值传输总是1500；
+                //40ms
                 if(rockerViewLeft.touchReadyToSend==true ||rockerViewRight.touchReadyToSend){
                     btSendBytes(Protocol.getSendData(Protocol.SET_4CON,
                             Protocol.getCommandData(Protocol.SET_4CON)));
 
-                    Log.i(TAG,"Thro: " +Protocol.throttle +",yaw: " +Protocol.yaw+ ",roll: "
+                    Log.i(TAG,mConnected+"Throttle: " +Protocol.throttle +",yaw: " +Protocol.yaw+ ",roll: "
                             + Protocol.roll +",pitch: "+ Protocol.pitch);
 
                     rockerViewLeft.touchReadyToSend=false;
@@ -210,7 +223,7 @@ public class BTClient extends Activity {
     private void resetButtonValue(final int connectBtnId) {
         connectButton.setText(connectBtnId);
         armButton.setText(R.string.Unarm);
-        lauchLandButton.setText(R.string.Launch);
+        launchLandButton.setText(R.string.Launch);
         headFreeButton.setTextColor(Color.WHITE);
         altHoldButton.setTextColor(Color.WHITE);
     }
@@ -252,14 +265,14 @@ public class BTClient extends Activity {
                         case JAPAN_PATTERN:
                             Protocol.pitch=y;
                             Protocol.roll=x;
-                            pitchText.setText("Pitch:"+Integer.toString(Protocol.pitch));
-                            rollText.setText("Roll:"+Integer.toString(Protocol.roll));
+//                            pitchText.setText("Pitch:"+Integer.toString(Protocol.pitch));
+//                            rollText.setText("Roll:"+Integer.toString(Protocol.roll));
                             break;
                         case AMERICA_PATTERN:
                             Protocol.yaw=x;
                             Protocol.throttle=y;
-                            throttleText.setText("Throttle:"+Integer.toString(Protocol.throttle));
-                            yawText.setText("Yaw:"+Integer.toString(Protocol.yaw));
+//                            throttleText.setText("Throttle:"+Integer.toString(Protocol.throttle));
+//                            yawText.setText("Yaw:"+Integer.toString(Protocol.yaw));
                             break;
                     }
                 }
@@ -302,14 +315,14 @@ public class BTClient extends Activity {
                         case AMERICA_PATTERN:
                             Protocol.pitch=y;
                             Protocol.roll=x;
-                            pitchText.setText("Pitch:"+Integer.toString(Protocol.pitch));
-                            rollText.setText("Roll:"+Integer.toString(Protocol.roll));
+//                            pitchText.setText("Pitch:"+Integer.toString(Protocol.pitch));
+//                            rollText.setText("Roll:"+Integer.toString(Protocol.roll));
                             break;
                         case JAPAN_PATTERN:
                             Protocol.yaw=x;
                             Protocol.throttle=y;
-                            throttleText.setText("Throttle:"+Integer.toString(Protocol.throttle));
-                            yawText.setText("Yaw:"+Integer.toString(Protocol.yaw));
+//                            throttleText.setText("Throttle:"+Integer.toString(Protocol.throttle));
+//                            yawText.setText("Yaw:"+Integer.toString(Protocol.yaw));
                             break;
                     }
                 }
@@ -356,7 +369,7 @@ public class BTClient extends Activity {
 		//按钮
         connectButton=(Button)findViewById(R.id.connectButton);
 		armButton=(Button)findViewById(R.id.armButton);
-		lauchLandButton=(Button)findViewById(R.id.lauchLandButton);
+		launchLandButton=(Button)findViewById(R.id.lauchLandButton);
 		headFreeButton=(Button)findViewById(R.id.headFreeButton);
 		altHoldButton=(Button)findViewById(R.id.altHoldButton);
 
@@ -377,6 +390,8 @@ public class BTClient extends Activity {
         //
 
         rockerPattern();
+
+
 
         switchTool.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -404,10 +419,10 @@ public class BTClient extends Activity {
         super.onResume();
 
         //注册BLE收发服务接收机mGattUpdateReceiver
-//        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
-//        if (mBluetoothLeService != null) {
-//            Log.d(TAG, "mBluetoothLeService NOT null");
-//        }
+        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+        if (mBluetoothLeService != null) {
+            Log.d(TAG, "mBluetoothLeService NOT null");
+        }
 
     }
 
@@ -416,7 +431,7 @@ public class BTClient extends Activity {
 	{
 		super.onPause();
         //注销BLE收发服务接收机mGattUpdateReceiver
-//        unregisterReceiver(mGattUpdateReceiver);
+        unregisterReceiver(mGattUpdateReceiver);
 	}
 	@Override
 	public void onStop()
@@ -429,8 +444,8 @@ public class BTClient extends Activity {
         super.onDestroy();
 
         //解绑BLE收发服务mServiceConnection
-//        unbindService(mServiceConnection);
-//        mBluetoothLeService = null;
+        unbindService(mServiceConnection);
+        mBluetoothLeService = null;
     }
 
 
@@ -456,10 +471,10 @@ public class BTClient extends Activity {
 
 		if(mConnected){
 			if(armButton.getText() != arm)	{
-				btSendBytes(Protocol.getSendData(Protocol.ARM_IT, Protocol.getCommandData(Protocol.ARM_IT)));
+				btSendBytes(Protocol.getSendData(Protocol.DISARM_IT, Protocol.getCommandData(Protocol.DISARM_IT)));
 				armButton.setText(arm);
 			}else{
-				btSendBytes(Protocol.getSendData(Protocol.DISARM_IT, Protocol.getCommandData(Protocol.DISARM_IT)));
+				btSendBytes(Protocol.getSendData(Protocol.ARM_IT, Protocol.getCommandData(Protocol.ARM_IT)));
 				armButton.setText(unarm);
 			}
 		}else {
@@ -474,23 +489,25 @@ public class BTClient extends Activity {
         String land = getResources().getString(R.string.Land);
         String disconnectToast = getResources().getString(R.string.DisconnectToast);
 
-//        if(mConnected){
-//            if(lauchLandButton.getText() != land){
-//                btSendBytes(Protocol.getSendData(Protocol.LAUCH, Protocol.getCommandData(Protocol.LAUCH)));
-//                lauchLandButton.setText(land);
-//                Protocol.throttle=Protocol.LAUCH_THROTTLE;
-//                stickView.SmallRockerCircleY=stickView.rc2StickPosY(Protocol.throttle);
-//                stickView.touchReadyToSend=true;
-//            }else{
-//                btSendBytes(Protocol.getSendData(Protocol.LAND_DOWN, Protocol.getCommandData(Protocol.LAND_DOWN)));
-//                lauchLandButton.setText(launch);
-//                Protocol.throttle=Protocol.LAND_THROTTLE;
-//                stickView.SmallRockerCircleY=stickView.rc2StickPosY(Protocol.throttle);
-//                stickView.touchReadyToSend=true;
-//            }
-//        }else {
-//            Toast.makeText(this, disconnectToast, Toast.LENGTH_SHORT).show();
-//        }
+        if(mConnected){
+            if(launchLandButton.getText() != land){
+                btSendBytes(Protocol.getSendData(Protocol.LAUNCH, Protocol.getCommandData(Protocol.LAUNCH)));
+                launchLandButton.setText(land);
+                //没有设置摇杆不受控制，因此LAUNCH_THROTTLE会因摇杆接触而失效
+                Protocol.throttle=Protocol.LAUNCH_THROTTLE;
+                //这里因为只要一个变化就会传输数据，因此随意定义一个控件为true
+                rockerViewRight.touchReadyToSend=true;
+
+            }else{
+                btSendBytes(Protocol.getSendData(Protocol.LAND_DOWN, Protocol.getCommandData(Protocol.LAND_DOWN)));
+                launchLandButton.setText(launch);
+                Protocol.throttle=Protocol.LAND_THROTTLE;
+
+                rockerViewRight.touchReadyToSend=true;
+            }
+        }else {
+            Toast.makeText(this, disconnectToast, Toast.LENGTH_SHORT).show();
+        }
 	}
 
 	//无头模式键
@@ -563,7 +580,6 @@ public class BTClient extends Activity {
                 mDeviceName = data.getExtras().getString(EXTRAS_DEVICE_NAME);
                 mDeviceAddress = data.getExtras().getString(EXTRAS_DEVICE_ADDRESS);
                 Log.i(TAG, "mDeviceName:"+mDeviceName+",mDeviceAddress:"+mDeviceAddress);
-
                 //连接该BLE Crazepony模块
                 if (mBluetoothLeService != null) {
                     final boolean result = mBluetoothLeService.connect(mDeviceAddress);
@@ -589,8 +605,12 @@ public class BTClient extends Activity {
             yawAngText.setText("Yaw Ang: "+Protocol.yawAng);
             altText.setText("Alt:"+Protocol.alt + "m");
             voltageText.setText("Voltage:"+Protocol.voltage + " V");
-            distanceText.setText("speedZ:"+Protocol.speedZ + "m/s");
+            distanceText.setText("Distance:"+Protocol.speedZ + "m");
             batteryView.setPower(Protocol.voltage);
+            yawText.setText("Yaw:"+Protocol.yawFly);
+            throttleText.setText("Throttle:"+Protocol.throttleFly);
+            pitchText.setText("Pitch:"+Protocol.pitchFly);
+            rollText.setText("Roll:"+Protocol.rollFly);
         }
     }
 
@@ -641,6 +661,27 @@ public class BTClient extends Activity {
                         mlogdata.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
                         mlogdata.setCancelable(false);
                         break;
+                    case R.id.action_bar:
+                        mAuxiliaryBar=new AuxiliaryBar(BTClient.this,R.style.MyDialog,Protocol.progressBar1,
+                                Protocol.progressBar2,Protocol.progressBar3,Protocol.progressBar4);
+                        mAuxiliaryBar.show();
+                        mAuxiliaryBar.getWindow().setLayout(width, height);
+                        Log.i(TAG,width+"and"+height);
+                        mAuxiliaryBar.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                        mAuxiliaryBar.setCancelable(false);
+                        mAuxiliaryBar.setOnProgressGetListener(new AuxiliaryBar.OnProgressGetListener() {
+                            @Override
+                            public void getProgress(int progress1, int progress2, int progress3, int progress4) {
+                                Protocol.progressBar1=progress1;
+                                Protocol.progressBar2=progress2;
+                                Protocol.progressBar3=progress3;
+                                Protocol.progressBar4=progress4;
+                                Log.d(TAG,"Yaw Auxi:"+Protocol.progressBar1+"Throttle Auxi:"+Protocol.progressBar2+"Pitch Auxi:"
+                                        +Protocol.progressBar3+"Yaw Auxi:"+Protocol.progressBar4);
+                                btSendBytes(Protocol.getSendData(Protocol.HEAD_FREE, Protocol.getCommandData(Protocol.AUXI_4CON)));
+                            }
+                        });
+                        break;
                     default:
                         break;
                 }
@@ -664,5 +705,7 @@ public class BTClient extends Activity {
         wm.getDefaultDisplay().getSize(point);
         return point;
     }
+
+
 
 }

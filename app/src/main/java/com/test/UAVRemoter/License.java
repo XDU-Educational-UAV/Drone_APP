@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -47,6 +48,7 @@ public class License extends Dialog{
         }
         String stringHelp=stringBuffer.toString();
         licenseText.setMovementMethod(ScrollingMovementMethod.getInstance());
+        Log.d("log",stringHelp);
         licenseText.setText(stringHelp);
         img_back.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

@@ -25,7 +25,7 @@ public class BatteryView extends View {
     private RectF mMainRect;
     private RectF mHeadRect;
     private float mRadius = 4f;   //圆角
-    private float mPower = -1;
+    private float mPower = (float) 0.8;
 
 
 
@@ -98,7 +98,12 @@ public class BatteryView extends View {
 
     public void setPower(float power) {
         mPower = power;
-        invalidate();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+            }
+        };
     }
 
 //    public class BatteryThread extends Thread{

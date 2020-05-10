@@ -158,7 +158,7 @@ public class DeviceScanActivity extends ListActivity {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
 
-        //选中BLE Crazepony飞行器，返回主界面
+        //选中UAVRemoter飞行器，返回主界面
         final BluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
         if (device == null) return;
 

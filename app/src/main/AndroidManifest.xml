@@ -21,15 +21,19 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/noTitleFullScreen">
-        <activity android:name=".logData"
-            android:screenOrientation="landscape"></activity>
+        <activity
+            android:name=".logData"
+            android:screenOrientation="landscape"
+            tools:ignore="LockedOrientationActivity" />
         <activity android:name=".Help"
-
-            android:screenOrientation="landscape"/>
+            android:screenOrientation="landscape"
+            tools:ignore="LockedOrientationActivity" />
         <activity android:name=".License"
-            android:screenOrientation="landscape"/>
+            android:screenOrientation="landscape"
+            tools:ignore="LockedOrientationActivity" />
         <activity android:name=".Settings"
-            android:screenOrientation="landscape"/>
+            android:screenOrientation="landscape"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".Splash"
             android:theme="@style/SplashTheme">
@@ -41,7 +45,8 @@
         </activity>
         <activity
             android:name=".BTClient"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".DeviceScanActivity"
             android:configChanges="orientation|keyboardHidden"

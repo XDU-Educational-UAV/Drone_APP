@@ -2,8 +2,11 @@ package com.test.UAVRemoter;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -44,6 +47,7 @@ public class AuxiliaryBar extends Dialog {
         this.mProgress4=progress4;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +83,7 @@ public class AuxiliaryBar extends Dialog {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void initSeekBar1()
     {
         seekBar1Text = (TextView) findViewById(R.id.mySeekBar1text);
@@ -86,6 +91,7 @@ public class AuxiliaryBar extends Dialog {
         seekBar1 = (SeekBar) findViewById(R.id.mySeekBar1);
         //初始化
         seekBar1.setMax(Protocol.MAX);
+        seekBar1.setMin(Protocol.MIN);
         seekBar1.setProgress(mProgress1);
         seekBar1.setOnSeekBarChangeListener(seekListener1);
         seekBar1Text.setText(Integer.toString(mProgress1));
@@ -113,11 +119,13 @@ public class AuxiliaryBar extends Dialog {
     };
 
     //second
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void initSeekBar2()
     {
         seekBar2Text = (TextView) findViewById(R.id.mySeekBar2text);
         seekBar2 = (SeekBar) findViewById(R.id.mySeekBar2); //初始化
         seekBar2.setMax(Protocol.MAX);
+        seekBar2.setMin(Protocol.MIN);
         seekBar2.setProgress(mProgress2);
         Log.d(TAG,"middle"+mProgress2);
         seekBar2.setOnSeekBarChangeListener(seekListener2);
@@ -144,12 +152,14 @@ public class AuxiliaryBar extends Dialog {
         }
     };
     //third
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void initSeekBar3()
     {
         seekBar3Text = (TextView) findViewById(R.id.mySeekBar3text);
         imageView = (ImageView) findViewById(R.id.close);
         seekBar3 = (SeekBar) findViewById(R.id.mySeekBar3); //初始化
         seekBar3.setMax(Protocol.MAX);
+        seekBar3.setMin(Protocol.MIN);
         seekBar3.setProgress(mProgress3);
         seekBar3.setOnSeekBarChangeListener(seekListener3);
         seekBar3Text.setText(Integer.toString(mProgress3));
@@ -181,12 +191,14 @@ public class AuxiliaryBar extends Dialog {
         }
     };
     //fourth
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void initSeekBar4()
     {
         seekBar4Text = (TextView) findViewById(R.id.mySeekBar4text);
         imageView = (ImageView) findViewById(R.id.close);
         seekBar4 = (SeekBar) findViewById(R.id.mySeekBar4); //初始化
         seekBar4.setMax(Protocol.MAX);
+        seekBar4.setMin(Protocol.MIN);
         seekBar4.setProgress(mProgress4);
         seekBar4.setOnSeekBarChangeListener(seekListener4);
         seekBar4Text.setText(Integer.toString(mProgress4));

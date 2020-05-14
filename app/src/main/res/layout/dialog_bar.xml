@@ -24,12 +24,12 @@ android:background="@android:color/transparent">
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
+                android:text="Yaw Auxiliary:"
                 android:textColor="@color/white"
                 android:textSize="12sp"
-                android:textStyle="bold"
-                android:text="Yaw Auxiliary:"/>
+                android:textStyle="bold" />
 
             <SeekBar
                 android:id="@+id/mySeekBar1"
@@ -57,7 +57,7 @@ android:background="@android:color/transparent">
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:textSize="12sp"
@@ -89,7 +89,7 @@ android:background="@android:color/transparent">
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:textSize="12sp"
@@ -121,7 +121,7 @@ android:background="@android:color/transparent">
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:textSize="12sp"

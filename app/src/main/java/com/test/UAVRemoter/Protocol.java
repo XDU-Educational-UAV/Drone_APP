@@ -26,12 +26,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Protocol {
-	public static final int MAX = 500;
+	public static final int MAX = 250;
+	public static final int MIN = -250;
 	public static int throttle,yaw,pitch,roll;
-	public static int progressBar2 = MAX/2,
-	progressBar1 = MAX/2,
-	progressBar3 = MAX/2,
-	progressBar4 = MAX/2;
+	public static int progressBar2 = (MAX-MIN)/2+MIN;
+	public static int progressBar1 = (MAX-MIN)/2+MIN;
+	public static int progressBar3 = (MAX-MIN)/2+MIN;
+	public static int progressBar4 = (MAX-MIN)/2+MIN;
 	public static float pitchAng,rollAng,yawAng,alt,voltage,speedZ;
 	public static int throttleFly,yawFly,pitchFly,rollFly;
 	public static byte[] outputData;

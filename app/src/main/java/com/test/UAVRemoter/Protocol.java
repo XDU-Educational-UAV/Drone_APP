@@ -54,7 +54,6 @@ public class Protocol {
 //	STOP_POS_HOLD=15,
 	FLY_STATE=16,//pitch、roll、yaw、Altitude、GPS_FIX?、Sat num、Voltage
 	MSP_SET_1WP=17,
-	AUXI_4CON=18,
 	SET_MOTOR=214,
 	MSP_ACC_CALIBRATION=205;
 	
@@ -91,8 +90,7 @@ public class Protocol {
 //			cmdData.add((byte)((throttle )&0xff));
 //			cmdData.add((byte)((throttle>>8)&0xff));
 //			break;
-		case SET_4CON: 	
-			cmdData.add((byte)((progressBar1 )&0xff));
+		case SET_4CON:
 			cmdData.add((byte)((roll>>8)&0xff));
 			cmdData.add((byte)((pitch )&0xff));
 			cmdData.add((byte)((pitch>>8)&0xff));
@@ -100,8 +98,6 @@ public class Protocol {
 			cmdData.add((byte)((yaw>>8)&0xff));
 			cmdData.add((byte)((throttle)&0xff));
 			cmdData.add((byte)((throttle>>8)&0xff));
-			break;
-		case AUXI_4CON:
 			cmdData.add((byte)((progressBar4)&0xff));
 			cmdData.add((byte)((progressBar4>>8)&0xff)); //roll
 			cmdData.add((byte)((progressBar3 )&0xff));
@@ -110,6 +106,7 @@ public class Protocol {
 			cmdData.add((byte)((progressBar1>>8)&0xff)); //yaw
 			cmdData.add((byte)((progressBar2)&0xff));
 			cmdData.add((byte)((progressBar2>>8)&0xff)); //throttle
+			break;
 		case ARM_IT:
 			return null;
 			//break;

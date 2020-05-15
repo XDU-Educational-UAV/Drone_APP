@@ -2,6 +2,8 @@
 
 ![logo](https://github.com/uav-operation-system/Drone_APP/raw/master/logo.jpg)
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ab718bf9bbbc440d953dca759e396049)](https://app.codacy.com/gh/uav-operation-system/Drone_APP?utm_source=github.com&utm_medium=referral&utm_content=uav-operation-system/Drone_APP&utm_campaign=Badge_Grade_Dashboard)
+
 ## Status
 
 ![Android CI](https://github.com/uav-operation-system/Drone_APP/workflows/Android%20CI/badge.svg?branch=master)

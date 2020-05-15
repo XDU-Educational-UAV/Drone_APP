@@ -22,7 +22,7 @@ public class BatteryView extends View {
     private RectF mMainRect;
     private RectF mHeadRect;
     private float mRadius = 4f;   //圆角
-    private float mPower = (float) 0.8;
+    private float mPower = (float) 0;
 
 
 

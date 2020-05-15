@@ -656,10 +656,11 @@ public class BTClient extends Activity {
                     case R.id.action_log:
                         mlogdata=new logData(BTClient.this,R.style.MyDialog);
                         mlogdata.show();
-                        mlogdata.getWindow().setLayout(width,height);;
+                        mlogdata.getWindow().setLayout(width,height);
                         Log.i(TAG,width+"and"+height);
                         mlogdata.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
                         mlogdata.setCancelable(false);
+                        mlogdata.SetData(mlogData);
                         break;
                     case R.id.action_bar:
                         mAuxiliaryBar=new AuxiliaryBar(BTClient.this,R.style.MyDialog,Protocol.progressBar1,
@@ -678,7 +679,8 @@ public class BTClient extends Activity {
                                 Protocol.progressBar4=progress4;
                                 Log.d(TAG,"Yaw Auxi:"+Protocol.progressBar1+"Throttle Auxi:"+Protocol.progressBar2+"Pitch Auxi:"
                                         +Protocol.progressBar3+"Yaw Auxi:"+Protocol.progressBar4);
-                                btSendBytes(Protocol.getSendData(Protocol.HEAD_FREE, Protocol.getCommandData(Protocol.AUXI_4CON)));
+                                btSendBytes(Protocol.getSendData(Protocol.HEAD_FREE, Protocol.getCommandData(Protocol.SET_4CON)));
+                                Log.d(TAG,"btsendbytes_Auxi");
                             }
                         });
                         break;
